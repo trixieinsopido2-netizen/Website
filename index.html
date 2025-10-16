@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- HTML with 10 intentional errors -->
+    
+    <div class="header-section">
+        <!-- Error 1: Missing closing tag for h1 -->
+        <h1>Student Management System
+        <div class="subtitle">Manage your students with style and efficiency</div>
+    </div>
+    
+    <div class="container">
+        
+        <!-- Statistics Section -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalStudents">0</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgGrade">0</div>
+                <div class="stat-label">Average Grade</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="topPerformers">0</div>
+                <div class="stat-label">Top Performers</div>
+            </div>
+        </div>
+        
+        <!-- Add Student Form -->
+        <div class="form-section">
+            <h2>Add New Student</h2>
+            <!-- Error 2: Missing action attribute and method -->
+            <form id="studentForm">
+                <div class="form-group">
+                    <!-- Error 3: Missing for attribute in label -->
+                    <label>Student Name:</label>
+                    <input type="text" id="studentName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentEmail">Email:</label>
+                    <!-- Error 4: Wrong input type for email -->
+                    <input type="text" id="studentEmail" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentAge">Age:</label>
+                    <input type="number" id="studentAge" min="16" max="100" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentGrade">Grade:</label>
+                    <!-- Error 5: Missing closing tag for select -->
+                    <select id="studentGrade" required>
+                        <option value="">Select Grade</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="F">F</option>
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentCourse">Course:</label>
+                    <input type="text" id="studentCourse" required>
+                </div>
+                
+                <!-- Error 6: Button without type attribute -->
+                <button class="btn-primary">Add Student</button>
+                <button type="button" class="btn-primary" onclick="clearForm()">Clear Form</button>
+            </form>
+        </div>
+        
+        <!-- Search Section -->
+        <div>
+            <h2>Student Records</h2>
+            <!-- Error 7: Input without proper label association -->
+            <input type="text" class="search-box" placeholder="Search students..." onkeyup="searchStudents()">
+        </div>
+        
+        <!-- Students Table -->
+        <!-- Error 8: Missing thead and tbody tags -->
+        <table class="students-table" id="studentsTable">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>Grade</th>
+                <th>Course</th>
+                <th>Actions</th>
+            </tr>
+        </table>
+    </div>
+    
+    <script>
+        let students = [];
+        let studentIdCounter = 1;
+        
+        // Error 9: Missing document ready or proper event listener
+        const form = document.getElementById('studentForm');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            addStudent();
+        });
+        
+        function addStudent() {
+            const name = document.getElementById('studentName').value;
+            const email = document.getElementById('studentEmail').value;
+            const age = document.getElementById('studentAge').value;
+            const grade = document.getElementById('studentGrade').value;
+            const course = document.getElementById('studentCourse').value;
+            
+            const student = {
+                id: studentIdCounter++,
+                name: name,
+                email: email,
+                age: parseInt(age),
+                grade: grade,
+                course: course
+            };
+            
+            students.push(student);
+            displayStudents();
+            updateStats();
+            clearForm();
+        }
+        
+        function displayStudents() {
+            const table = document.getElementById('studentsTable');
+            
+            // Clear existing rows except header
+            while(table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+            
+            students.forEach(student => {
+                const row = table.insertRow();
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.name}</td>
+                    <td>${student.email}</td>
+                    <td>${student.age}</td>
+                    <td>${student.grade}</td>
+                    <td>${student.course}</td>
+                    <td class="actions">
+                        <button class="btn-primary" onclick="editStudent(${student.id})">Edit</button>
+                        <button class="btn-danger" onclick="deleteStudent(${student.id})">Delete</button>
+                    </td>
+                `;
+            });
+        }
+        
+        function deleteStudent(id) {
+            students = students.filter(student => student.id !== id);
+            displayStudents();
+            updateStats();
+        }
+        
+        function editStudent(id) {
+            const student = students.find(s => s.id === id);
+            if (student) {
+                document.getElementById('studentName').value = student.name;
+                document.getElementById('studentEmail').value = student.email;
+                document.getElementById('studentAge').value = student.age;
+                document.getElementById('studentGrade').value = student.grade;
+                document.getElementById('studentCourse').value = student.course;
+                
+                // Remove the student for editing
+                deleteStudent(id);
+            }
+        }
+        
+        function clearForm() {
+            document.getElementById('studentForm').reset();
+        }
+        
+        function searchStudents() {
+            const searchTerm = event.target.value.toLowerCase();
+            const table = document.getElementById('studentsTable');
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.getElementsByTagName('td');
+                let found = false;
+                
+                for (let j = 0; j < cells.length - 1; j++) {
+                    if (cells[j].textContent.toLowerCase().includes(searchTerm)) {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                row.style.display = found ? '' : 'none';
+            }
+        }
+        
+        function updateStats() {
+            const totalStudents = students.length;
+            document.getElementById('totalStudents').textContent = totalStudents;
+            
+            if (totalStudents > 0) {
+                const gradePoints = { 'A': 4, 'B': 3, 'C': 2, 'D': 1, 'F': 0 };
+                const avgGrade = students.reduce((sum, student) => sum + (gradePoints[student.grade] || 0), 0) / totalStudents;
+                document.getElementById('avgGrade').textContent = avgGrade.toFixed(2);
+                
+                const topPerformers = students.filter(student => student.grade === 'A').length;
+                document.getElementById('topPerformers').textContent = topPerformers;
+            } else {
+                document.getElementById('avgGrade').textContent = '0';
+                document.getElementById('topPerformers').textContent = '0';
+            }
+        }
+        
+        // Error 10: Missing closing script tag
+    </script>
+<!-- Missing closing body and html tags would be errors 11 and 12, but keeping to exactly 10 HTML errors as requested -->
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f3f14db408db1c',t:'MTc2MDU3OTgxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
